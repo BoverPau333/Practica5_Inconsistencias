@@ -99,6 +99,7 @@ dirty_iris[rowSums(medidas == 0, na.rm = TRUE) > 0, ]
 
 
 ```
+Comprovamos que efectivamente todas las columnas cuentan con NA, la que más Petal.Length con 19 NA,  despues vemos que hay una instancia de Sepal.Width con negativo y 3 una de cada columna en la que la medición es 0, todos estos errores se deben de solucionar de alguna manera ya que afectarian a un analisis posterior sobre los datos.
 
 ## Ejercicio 2: Valores especiales
 
@@ -126,7 +127,9 @@ dirty_iris <- dirty_iris %>%
 dirty_iris[rowSums(medidas < 0, na.rm = TRUE) > 0, ]
 dirty_iris[rowSums(medidas == 0, na.rm = TRUE) > 0, ]
 ```
+Se han reemplazado por `NA` los valores especiales (`NA`, `NaN`, `Inf` y `-Inf`), negativos e iguales a cero, tal como pide el ejercicio. Para ello, `across(where(is.numeric))` selecciona las columnas numéricas e `ifelse()` comprueba cada valor: si no es finito o es menor o igual a cero, lo sustituye por `NA`; en caso contrario, lo conserva. Las columnas no numéricas, como `Species`, no se modifican.
 
+Para comprobar la limpieza, mostramos las filas que originalmente contenían medidas negativas o ceros. Utilizamos `medidas`, que conserva los valores anteriores a la modificación, para localizar esas filas mediante `rowSums()`. Al consultar sus valores actuales en `dirty_iris`, podemos verificar que las posiciones conflictivas se han sustituido por `NA`.
 
 
 ## Ejercicio 3: Valores perdidos y observaciones completas
