@@ -209,19 +209,54 @@ Escribe una función que detecte los outliers de un vector $x$ para cada uno de 
 
 ```{r , include = FALSE}
 # Regla 3 sigma
+reglasigma <- function(x){
+  Media <-mean(x,na.rm=TRUE)
+  dt<-sd(x,na.rm=TRUE)
+  upLim<-Media+3*dt
+  lowLim<-Media-3*dt
+  return(c(x<lowLim | x>upLim))
+}
+
+sum(reglasigma(dirty_iris$Sepal.Length),na.rm = T)
 
 
 # Identificador Hampel
+reglaboxplotreglahampel <- function(x){
+  mediana <-median(x,na.rm=TRUE)
+  dt_median<- mad(x,na.rm=TRUE)
+  upLim<-mediana+3*dt_median
+  lowLim<-mediana-3*dt_median
+  return(c(x<lowLim | x>upLim))
+}
 
-
+sum(reglahampel(dirty_iris$Sepal.Length),na.rm = T)
 
 # Regla boxplot
 
+reglaboxplot <- function(x){
+  q1 <- quantile(x, probs = 0.25, na.rm = TRUE)
+  q3 <- quantile(x, probs = 0.75, na.rm = TRUE)
+  rango <- q3 - q1
+  lowLim <- q1 - 1.5 * rango
+  upLim <- q3 + 1.5 * rango
+  return(c(x<lowLim | x>upLim))
+}
+
+sum(reglaboxplot(dirty_iris$Sepal.Length),na.rm = T)
 
 # Percentiles
 
+reglapercentil <- function(x){
+  p5 <- quantile(x, probs = 0.05, na.rm = TRUE)
+  p95 <- quantile(x, probs = 0.95, na.rm = TRUE)
+  return(c(x < p5 | x > p95))
+}
+
+sum(reglapercentil(dirty_iris$Sepal.Length),na.rm = T)
+
 ```
 
+Programo las funciones para que devulevan un vector de booleanos siendo True si el metodo lo considera un outlier y False en caso contrario y NA si no puede calcularlo, asi posteriormente me es mas facil detectar cuales son outliers.
 
 ## Ejercicio 6: Detección de outliers
 
