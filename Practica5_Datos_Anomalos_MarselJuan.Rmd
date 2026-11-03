@@ -154,7 +154,7 @@ porcentaje_limpias
 
 Primero utilizamos `complete.cases()` para identificar las observaciones que no contienen ningún dato perdido. Esta función devuelve `TRUE` para las filas completas y `FALSE` para las demás. Al sumar esos valores obtenemos el número de observaciones completas, que dividimos entre el total de filas y multiplicamos por 100 para calcular su porcentaje: **61.33 %**.
 
-Después empleamos `na.omit()` para crear `clean_iris`, eliminando las filas que contienen algún `NA`. Calculamos qué porcentaje de las observaciones originales conserva este nuevo conjunto y obtenemos de nuevo **61.33 %**. La coincidencia confirma que ambos procedimientos identifican las mismas filas completas; se descarta el **38.67 %** de las observaciones por presentar al menos un dato perdido.
+Después empleamos `na.omit()` para crear `clean_iris`, eliminando las filas que contienen algún `NA`. Calculamos qué porcentaje de las observaciones originales conserva este nuevo conjunto y obtenemos de nuevo **61.33 %**, asi sabemos que es correcto porque coincide con el anterior, se descarta el **38.67 %** de las observaciones por presentar al menos un dato perdido.
 
 # Detección de outliers univariante
 
@@ -175,8 +175,24 @@ Hazlo para el data frame con observaciones completas `clean_iris` (que no tiene 
 
 ```{r , include = TRUE}
 
+clean_iris %>%
+  summarise(across(where(is.numeric), list(mean = mean, sd = sd, IQR = IQR, mediana = median, MADM = mad))) %>%
+  pivot_longer(names_to = c('Variabl','Estadist'),values_to = 'valor',names_sep = '_',cols=everything())%>%
+  pivot_wider(names_from = Estadist,values_from = valor) %>% mutate(across(where(is.numeric),round,digits=3))
+
+
+
+dirty_iris %>%
+  summarise(across(where(is.numeric),  list(mean = ~ mean(., na.rm = TRUE), sd = ~ sd(., na.rm = TRUE),
+                        IQR = ~ IQR(., na.rm = TRUE), mediana = ~ median(., na.rm = TRUE), MADM = ~ mad(., na.rm = TRUE)))) %>%
+  pivot_longer(names_to = c('Variabl','Estadist'),values_to = 'valor',names_sep = '_',cols=everything())%>%
+  pivot_wider(names_from = Estadist,values_from = valor) %>% mutate(across(where(is.numeric),round,digits=3))
+              
+
+
 ```
 
+Podemos observar como el hecho de limpiar el dataset afecta a los estadisticos, desplazando todos ellos, por ejemplo en el Sepal.Length	la media del dataset limpio es 6.367 mientras que del completo es 6.606.
 
 ## Ejercicio 5: Métodos de detección de outliers
 
