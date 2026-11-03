@@ -2,15 +2,15 @@
 title: "Práctica 5. Datos Anómalos"
 subtitle: "Análisis Exploratorio de Datos, Máster en Ciencia de Datos - UV"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: no
   html_document:
     echo: yes
     number_sections: no
     theme: lumen
     toc: yes
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    number_sections: no
 ---
 
 ## Autor: Pau Bover Femenias
@@ -378,7 +378,7 @@ dirty_iris <- dirty_iris %>%
 head(dirty_iris %>% select(Petal.Length,Petal.Length1,Petal.Length2))
 
 ```
-Podemos observar como esta impuracion es mucho mas correcta ya que por ejemplo en la ultima fila del head observamos que antes aparecia un NA en una setosa y con el primer metodo le asignabamos 4.5 aprox, pero en este segundo contando con la informacion de la especie, la media de la especie se ajusta mucho mas a un hipotetico valor real.
+Podemos observar como esta impuracion es mucho mas correcta ya que por ejemplo en la ultima fila del head observamos que antes aparecia un NA en una setosa y con el primer metodo le asignabamos 4.5 aprox, pero en este segundo contando con la informacion de la especie, la media de la especie se ajusta mucho mas a un hipotetico valor real. Lo dejo agrupado ya que asi se visualiza mejor como segun la especie la media es diferente y se ajusta mas a el resot de la especie.
 
 ## Ejercicio 10: Representación gráfica
 
