@@ -192,7 +192,8 @@ dirty_iris %>%
 
 ```
 
-Podemos observar como el hecho de limpiar el dataset afecta a los estadisticos, desplazando todos ellos, por ejemplo en el Sepal.Length	la media del dataset limpio es 6.367 mientras que del completo es 6.606.
+Podemos observar como el hecho de limpiar el dataset afecta a los estadisticos, desplazando todos ellos, por ejemplo en la **desviación típica**: en `dirty_iris`, aumenta de **4.574 a 6.802** para `Sepal.Length` y de **2.877 a 5.778** para `Petal.Length`. Sus medias también son mayores, especialmente en `Petal.Length`, que pasa de **4.158 a 4.484**. Esto sugiere que algunas observaciones conservadas en `dirty_iris` contienen valores elevados que afectan a ambas medidas. En cambio, las **medianas y los IQR apenas cambian**. Por ejemplo, `Sepal.Length` mantiene una mediana de **5.8** y un IQR de **1.3**. Estas medidas son más resistentes a los valores extremos, por lo que describen una parte central de los datos bastante similar en ambos conjuntos.
+Las diferencias se explican porque `clean_iris` elimina cualquier fila con algún dato perdido, mientras que en `dirty_iris` aprovechamos los valores disponibles de cada columna.
 
 ## Ejercicio 5: Métodos de detección de outliers
 
