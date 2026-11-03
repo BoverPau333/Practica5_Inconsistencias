@@ -404,9 +404,32 @@ sum(dirty_iris_outliers_2$Petal.Length2_percentil)
 
 ```{r Solucion ejercicio 10b, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
+graficas_imput <- dirty_iris_outliers_2 %>%
+  filter(Petal.Length2_percentil == FALSE) %>%
+  mutate(Tipo = ifelse(is.na(Petal.Length), "Imputado", "Original")) %>%
+  ggplot(aes(x = Petal.Length1, y = Petal.Length2, color = Tipo)) +
+  geom_point(position = position_jitter(width = 0.1,
+                                        height = 0.1,
+                                        seed = 123),
+             size = 3, alpha = 0.7) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed",
+              color = "grey50") +
+  scale_color_manual(values = c("Original" = "steelblue",
+                                "Imputado" = "red")) +
+  labs(title = "Comparación de los métodos de imputación",
+       x = "Imputación con la media global",
+       y = "Imputación con la media por especie",
+       color = "Tipo de dato") +
+  theme_minimal()
 
-
+graficas_imput
 ```
 
+Como he explicado en ejercicios anteriores, la imputación con la media global asigna el mismo valor a todos los datos perdidos, mientras que la imputación por especie tiene en cuenta el grupo al que pertenece cada observación. Por eso, los puntos rojos comparten la misma posición horizontal, pero presentan distintas alturas según su especie. Los puntos azules se sitúan sobre la diagonal porque los valores originales se conservan en ambos métodos. La imputación por especie permite reflejar mejor las diferencias entre grupos, aunque sigue siendo sensible a los valores extremos utilizados para calcular sus medias, por eso parecen estar un poco por encima de donde seria la media de su grupo. Le pongo jitter a la grafica para obsercar correctamente donde se situan los puntos.
 
+```{r}
+ggsave("results/comparacion_imputacion_petalLenght.pdf",
+       plot = graficas_imput)
+
+```
 
