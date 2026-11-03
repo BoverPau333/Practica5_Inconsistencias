@@ -287,6 +287,15 @@ En los métodos de detección de outliers analizados, examina los resultados com
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
+dirty_iris %>%
+  summarise(across(starts_with("Petal.Length_"),
+                   ~ sum(., na.rm = TRUE))) %>% pivot_longer(cols = everything(), names_to = "Metodo", values_to = "Numero_outliers")
+
+
+dirty_iris %>% select(Petal.Length, starts_with("Petal.Length_")) %>% pivot_longer(cols = starts_with("Petal.Length_"),
+               names_to = "Metodo", values_to = "Outlier") %>% filter(Outlier == TRUE) %>% arrange(Metodo, Petal.Length) %>% select(Metodo, Petal.Length)
+
+
 ```
 
 ## Ejercicio 8: Representación gráfica
