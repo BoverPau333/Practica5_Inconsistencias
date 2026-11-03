@@ -298,9 +298,9 @@ dirty_iris_outliers %>% select(Petal.Length, starts_with("Petal.Length_")) %>% p
 
 ```
 
-Primero contamos los outliers detectados por cada método sumando los valores `TRUE` de sus columnas e ignorando los `NA`. Después, `pivot_longer()` organiza el resultado en una tabla con una fila por método y su número de outliers.
+Primero contamos los outliers detectados por cada método sumando los valores `TRUE` de sus columnas e ignorando los `NA`. Después, `pivot_longer()` organiza el resultado en una tabla con una fila por método y su número de outliers. Vemos que cada metodo detecta un numero diferente de outliers, esto se debe principalmente a el hecho de que hay metodos mas o menos restrictivos en cuanto a lo que se considera, por ejemplo el percentil fierza a que haya un 10% de outliers, esto explica poruque aprecen tantos.
 
-Despues reunimos las etiquetas de los métodos mediante `pivot_longer()` y conservamos únicamente los casos marcados como `TRUE`. Finalmente, ordenamos los valores de `Petal.Length` de menor a mayor dentro de cada método y mostramos ambas columnas.
+Despues reunimos las etiquetas de los métodos mediante `pivot_longer()` y conservamos únicamente los casos marcados como `TRUE`. Finalmente, ordenamos los valores de `Petal.Length` de menor a mayor dentro de cada método y mostramos ambas columnas. Vemos que los valores son casi siempre lso mismos, por tanto casi todos los metodos coiciden en las instancias que se consideran como outliers.
 
 ## Ejercicio 8: Representación gráfica
 
@@ -329,7 +329,7 @@ grafica8 <- dirty_iris_outliers %>%
 
 grafica8
 ```
-En la gráfica, Hampel y boxplot ofrecen la mejor detección, al identificar los valores claramente alejados del conjunto sin marcar los de la zona central, es decir ni muy restrictivos ni muy poco. El método de **percentiles resulta demasiado restrictivo**, ya que también clasifica como atípicos valores próximos al resto de las observaciones. Por el contrario, la **regla de tres sigma es poco restrictiva** y deja como típico un valor cercano a 14: los valores extremos elevan la media y la desviación típica, ampliando los límites de detección.
+En la gráfica, Hampel y boxplot ofrecen la mejor detección, al identificar los valores claramente alejados del conjunto sin marcar los de la zona central, es decir ni muy restrictivos ni muy poco. El método de **percentiles resulta demasiado restrictivo**, ya que también clasifica como atípicos valores próximos al resto de las observaciones, ya que fuerza el 5% innferior a ser outliers cuando atendiendo a la distribucion no deberian de serlo. Por el contrario, la **regla de tres sigma es poco restrictiva** y deja como típico un valor cercano a 14: los valores extremos elevan la media y la desviación típica, ampliando los límites de detección.
 
 ```{r}
 ggsave("results/outliers_Petal_Length.pdf",
@@ -354,13 +354,15 @@ Se puede realizar una imputación generalizada (usando todos los valores de la v
 
 ```{r Solucion ejercicio 9a, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
-
 dirty_iris <- dirty_iris %>%
   mutate(Petal.Length1 = ifelse(is.na(Petal.Length), mean(Petal.Length, na.rm = TRUE), Petal.Length))
 
 head(dirty_iris %>% select(Petal.Length,Petal.Length1))
+c(sd(dirty_iris$Petal.Length, na.rm = T), sd(dirty_iris$Petal.Length1))
 
 ```
+Vemos como la imputacion se ha realizado correctamente, y que ya no hay valores NA, sin embargo imputar con la media presenta algunos problemas, por ejemplo no tiene en cuenta los valores especificos de cada instancia pudiendo imputar valores muy alejados de lo que tendria sentido, metodos como KNN evitan esto, otro problema es que al lleva todas las instancias de NA a la media, estan modificando la distribucion de los datos aumentando el numero de muestras que se encuentran en la media y por tanto moviendo la desviacion tipica y el resto de estadisticos, si bien es poco apreciable en este ejemplo, en un ejemplo donde haya mas valores podria suponer un problema modificar la distribución sin entender que estas haciendo relamnete.
+
 
   * Imputa los missing data en `Petal.Length` empleando en esta ocasión la media para cada tipo de `Species` (usar`group_by` y `mutate`) creando una nueva variable `Petal.Length2`.
 
@@ -376,6 +378,7 @@ dirty_iris <- dirty_iris %>%
 head(dirty_iris %>% select(Petal.Length,Petal.Length1,Petal.Length2))
 
 ```
+Podemos observar como esta impuracion es mucho mas correcta ya que por ejemplo en la ultima fila del head observamos que antes aparecia un NA en una setosa y con el primer metodo le asignabamos 4.5 aprox, pero en este segundo contando con la informacion de la especie, la media de la especie se ajusta mucho mas a un hipotetico valor real.
 
 ## Ejercicio 10: Representación gráfica
 
