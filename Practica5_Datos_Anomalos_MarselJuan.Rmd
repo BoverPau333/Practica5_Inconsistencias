@@ -13,6 +13,8 @@ output:
     number_sections: no
 ---
 
+## Autor: Pau Bover Femenias
+
 ```{r setup, cache = F, echo = F, message = F, warning = F, tidy = F}
 # CONFIGURACIÓN GENERAL
 library(knitr)
@@ -74,9 +76,27 @@ Por lo general, no hay un convenio o una representación común para indicar un 
 ## Ejercicio 1: Inspección Visual
 
 Inspecciona visualmente los valores del conjunto de datos (`View`) y ordena de mayor a menor y de menor a mayor cada variable para descubrir las diferentes inconsistencias que presenta el conjunto `dirty_iris`. Comenta los valores que te llamen la atención.
+```{r}
+#View(dirty_iris)
+
+```
+
+LLama la atención a primera vista que en todas las columnas aparecen datos faltantes (NA), ademas hay datos con valor negativo, lo cual es imposible en una medición real y datos con valor 0 que tambien parecen inconsistentes con la realidad. Ademas la esccala de petal.lenght parece que esta errada en comparacion al resto ya que tiene unidades mucho mayores.
 
 ```{r Solucion ejercicio 1, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 # Medidas con valores faltantes, longitudes negativas y cero
+
+medidas <- dirty_iris[sapply(dirty_iris, is.numeric)]
+
+#Valores NA
+colSums(is.na(dirty_iris))
+
+#Valores Negativos
+dirty_iris[rowSums(medidas < 0, na.rm = TRUE) > 0, ]
+
+# Valores == 0
+dirty_iris[rowSums(medidas == 0, na.rm = TRUE) > 0, ]
+
 
 ```
 
@@ -99,8 +119,14 @@ Nota: Puedes reemplazar los valores para cada variable del dataframe usando `mut
 ```{r Solucion ejercicio 2, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 # DEBEMOS ELIMINAR TAMBIEN LOS VALROES IGUALES A CERO YA QUE SE TRATA DE LONGITUDES DE PARTES DE UNA FLOR. NO PUEDEN SER O
 
+dirty_iris <- dirty_iris %>%
+  mutate(across(where(is.numeric), ~ ifelse(!is.finite(.) | . <= 0, NA, .)))
 
+#Las filas que antes eran conflictivas 
+dirty_iris[rowSums(medidas < 0, na.rm = TRUE) > 0, ]
+dirty_iris[rowSums(medidas == 0, na.rm = TRUE) > 0, ]
 ```
+
 
 
 ## Ejercicio 3: Valores perdidos y observaciones completas
@@ -109,7 +135,16 @@ Nota: Puedes reemplazar los valores para cada variable del dataframe usando `mut
   * Emplea después la función `na.omit` para quedarnos solo con las filas con datos completos en un nuevo data frame `clean_iris`.
 
 ```{r Solucion ejercicio 3, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+completas <- complete.cases(dirty_iris)
+#completas
 
+porcentaje_completas <- sum(completas) / nrow(dirty_iris) * 100
+porcentaje_completas
+
+
+clean_iris <- na.omit(dirty_iris)
+porcentaje_limpias <- nrow(clean_iris) / nrow(dirty_iris) * 100
+porcentaje_limpias
 ```
 
 # Detección de outliers univariante
